@@ -4,12 +4,17 @@ layout: main
 section: parallelism
 ---
 
+### Environment
 
-The CUDA Runtime API reference manual is a very useful source of information:
-<a href="http://docs.nvidia.com/cuda/cuda-runtime-api/index.html" target="_blank">http://docs.nvidia.com/cuda/cuda-runtime-api/index.html</a>
+Add at the end of your `.bashrc` file add the following line
+```bash
+export LD_LIBRARY_PATH=/usr/local/cuda-11.5/lib64:$LD_LIBRARY_PATH
+```
+
+Now clone the repository
 
 ```bash
-$ cd heterogeneous-training/hands-on/cuda-exercises
+$ git clone https://github.com/cms-patatrack/heterogeneous-training.git
 ```
 
 
@@ -173,4 +178,9 @@ __half atomicAdd(__half *address, __half val);
 reads the 16-bit, 32-bit or 64-bit word old located at the address in global or shared memory, computes (old + val), and stores the result back to memory at the same address. These three operations are performed in one atomic transaction. The function returns old.
 
 
+
+### Reference Material
+
+The CUDA Runtime API reference manual is a very useful source of information:
+<a href="http://docs.nvidia.com/cuda/cuda-runtime-api/index.html" target="_blank">http://docs.nvidia.com/cuda/cuda-runtime-api/index.html</a>
 
