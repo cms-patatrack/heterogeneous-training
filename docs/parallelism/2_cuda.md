@@ -10,7 +10,7 @@ There are two machines available to you:
 - `hpc-gpu-1-4-3.recas.ba.infn.it`
 - `hpc-gpu-1-2-1.recas.ba.infn.it`
 
-You should have received a username: `userNN`. If NN is an odd number you should use the first machine, if it's an even number please use the second machine.
+You should have received a username: `userNN`. If `NN` is an odd number you should use the first machine, if it's an even number please use the second machine.
 
 To connect to the machine you use the following line, replacing `userNN` with your username:
 ```bash
