@@ -5,11 +5,13 @@ section: parallelism
 ---
 
 Let's deactivate the conda virtual environment:
+
 ```bash
 $ conda deactivate
 ```
 
 Add at the end of your `.bashrc` file add the following line
+
 ```bash
 export LD_LIBRARY_PATH=/usr/local/cuda-11.5/lib64:$LD_LIBRARY_PATH
 ```
@@ -22,17 +24,20 @@ $ git clone https://github.com/cms-patatrack/heterogeneous-training.git
 
 
 Check that your environment is correctly configured to compile CUDA code by running:
+
 ```bash
 $ nvcc --version
 ```
 
 Compile and run the `deviceQuery` application:
+
 ```bash
 cd heterogeneous-training/hands-on/cuda-exercises/utils/deviceQuery
 make
 ```
 
 You can get some useful information about the features and the limits that you will find on the device you will be running your code on. For example:
+
 ```
 $ ./deviceQuery 
 ./deviceQuery Starting...
@@ -83,11 +88,10 @@ deviceQuery, CUDA Driver = CUDART, CUDA Driver Version = 11.4, CUDA Runtime Vers
 Result = PASS
 ```
 
-
 Some of you are sharing the same machine and some time measurements can be influenced by other users running at the very same moment. It can be necessary to run time measurements multiple times.
 
-
 ### Exercise 1. CUDA Memory Model
+
 In this exercise you will learn what heterogeneous memory model means, by demonstrating the difference between host and device memory spaces.
 
 1. Allocate device memory;
@@ -105,6 +109,7 @@ $ ./ex01
 * Bonus: Measure the PCI Express bandwidth.
 
 ### Exercise 2. Launch a kernel
+
 By completing this exercise you will learn how to configure and launch a simple CUDA kernel.
 
 1. Allocate device memory;
@@ -116,6 +121,7 @@ By completing this exercise you will learn how to configure and launch a simple 
 5. Check the correctness of the results
 
 ### Exercise 3. Two-dimensional grid
+
 M is a matrix of NxN integers.
 
 1. Set N=4
@@ -125,12 +131,14 @@ M is a matrix of NxN integers.
 
 
 ### Exercise 4. Parallel Reduction
+
 Given an array `a[N]`, the reduction sum `Sum` of a is the sum of all its elements: `Sum=a[0]+a[1]+...a[N-1]`.
+
 1. Implement a block-wise parallel reduction (using the shared memory).
 2. For each block, save the partial sum.
 3. Sum all the partial sums together.
 4. Check the result and compare the obtained result with the host one.
-5. Measure the throughput of your reduction kernel using CUDA Events (see exercise 4)
+
 * Bonus: Can you implement a one-step reduction? Measure and compare the throughput of the two versions.
 * Challenge: The cumulative sum of an array `a[N]` is another array `b[N]`, the sum of prefixes of `a`:
 `b[i] = a[0] + a[1] + … + a[i]`. Implement a cumulative sum kernel assuming that the size of the input array is multiple of the block size.
@@ -147,6 +155,7 @@ The input length can be assumed to be less than 2ˆ32. `NUM_BINS` is fixed at 40
 This can be split into two kernels: one that does a histogram without saturation, and a final kernel that cleans up the bins if they are too large. These two stages can also be combined into a single kernel.
 
 ### Utility. Measuring time using CUDA Events
+
 ```C++
 cudaEvent_t start, stop; float time;
 cudaEventCreate(&start);  cudaEventCreate(&stop);
@@ -165,7 +174,6 @@ std::cout << "Time for the kernel: " << time << " ms" << std::endl;
 An atomic function performs a read-modify-write atomic operation on one 32-bit or 64-bit word residing in global or shared memory.
 The operation is atomic in the sense that it is guaranteed to be performed without interference from other threads.
 
-
 ```C++
 int atomicAdd(int* address, int val);
 unsigned int atomicAdd(unsigned int* address,
@@ -180,10 +188,7 @@ __half atomicAdd(__half *address, __half val);
 
 reads the 16-bit, 32-bit or 64-bit word old located at the address in global or shared memory, computes (old + val), and stores the result back to memory at the same address. These three operations are performed in one atomic transaction. The function returns old.
 
-
-
 ### Reference Material
 
 The CUDA Runtime API reference manual is a very useful source of information:
 <a href="http://docs.nvidia.com/cuda/cuda-runtime-api/index.html" target="_blank">http://docs.nvidia.com/cuda/cuda-runtime-api/index.html</a>
-
