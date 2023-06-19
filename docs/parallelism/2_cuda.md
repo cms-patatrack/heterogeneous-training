@@ -129,8 +129,25 @@ M is a matrix of NxN integers.
 3. Copy the result to the host and check that it is correct.
 4. Try with a rectangular matrix 19x67. Hint: check the kernel launch parameters.
 
+### Exercise 4. Measuring throughput 
 
-### Exercise 4. Parallel Reduction
+The throughput of a kernel can be defined as the number of bytes read and written by a kernel in the unit of time.
+
+The CUDA event API includes calls to create and destroy events, record events, and compute the elapsed time in milliseconds between two recorded events.
+
+CUDA events make use of the concept of CUDA streams. A CUDA stream is simply a sequence of operations that are performed in order on the device. Operations in different streams can be interleaved and in some cases overlapped, a property that can be used to hide data transfers between the host and the device. Up to now, all operations on the GPU have occurred in the default stream, or stream 0 (also called the "Null Stream").
+
+The peak theoretical throughput can be evaluated as well: if your device comes with a memory clock rate of 1GHz DDR (double data rate) and a 256-bit wide memory interface, the peak theoretical throughput can be computed with the following:
+
+Throughput (GB/s)= Memory_rate(Hz) * memory_interface_width(byte) * 2 /10<sup>9</sup>
+
+1. Compute the theoretical peak throughput of the device you are using.
+2. Modify ex04.cu to give the measurement of actual throughput of the kernel.
+3. Measure the throughput with a decreasing number of elements (in logarithmic scale). Before doing that write down what do you expect (you can also draw a diagram).
+4. What did you find out? Can you give an explanation?
+
+
+### Exercise 5. Parallel Reduction
 
 Given an array `a[N]`, the reduction sum `Sum` of a is the sum of all its elements: `Sum=a[0]+a[1]+...a[N-1]`.
 
