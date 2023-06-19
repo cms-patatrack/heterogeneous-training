@@ -114,9 +114,7 @@ By completing this exercise you will learn how to configure and launch a simple 
 
 1. Allocate device memory;
 2. Configure the kernel to run using a one-dimensional grid of one-dimensional blocks;
-3. Each GPU thread should set one element of the array to:
-
-   `d_a[i] = blockIdx.x + threadIdx.x + 42;`
+3. Each GPU thread should set one element of the array to `d_a[i] = blockIdx.x + threadIdx.x + 42;`
 4. Copy the results to the host memory;
 5. Check the correctness of the results
 
