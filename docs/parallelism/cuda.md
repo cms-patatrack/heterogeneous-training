@@ -4,17 +4,8 @@ layout: main
 section: parallelism
 ---
 
-Let's deactivate the conda virtual environment:
 
-```bash
-$ conda deactivate
-```
-
-Add at the end of your `.bashrc` file add the following line
-
-```bash
-export LD_LIBRARY_PATH=/usr/local/cuda-11.5/lib64:$LD_LIBRARY_PATH
-```
+I'm assuming that you have access to a machine where CUDA is available.
 
 Now clone the repository
 
@@ -27,18 +18,22 @@ Check that your environment is correctly configured to compile CUDA code by runn
 
 ```bash
 $ nvcc --version
+nvcc: NVIDIA (R) Cuda compiler driver
+Copyright (c) 2005-2023 NVIDIA Corporation
+Built on Mon_Apr__3_17:16:06_PDT_2023
+Cuda compilation tools, release 12.1, V12.1.105
+Build cuda_12.1.r12.1/compiler.32688072_0
 ```
 
 Compile and run the `deviceQuery` application:
-
 ```bash
-cd heterogeneous-training/hands-on/cuda-exercises/utils/deviceQuery
-make
+$ cd hands-on/cuda/utils/deviceQuery
+$ make
 ```
 
 You can get some useful information about the features and the limits that you will find on the device you will be running your code on. For example:
 
-```
+```shell
 $ ./deviceQuery 
 ./deviceQuery Starting...
 
@@ -90,7 +85,7 @@ Result = PASS
 
 Some of you are sharing the same machine and some time measurements can be influenced by other users running at the very same moment. It can be necessary to run time measurements multiple times.
 
-### Exercise 1. CUDA Memory Model
+### Exercise 1: CUDA Memory Model
 
 In this exercise you will learn what heterogeneous memory model means, by demonstrating the difference between host and device memory spaces.
 
@@ -106,57 +101,48 @@ $ nvcc cuda_mem_model.cu -o ex01
 $ ./ex01
 ```
 
-* Bonus: Measure the PCI Express bandwidth.
+7. Repeat the exercise using CUDA Streams with `cudaMallocAsync`, `cudaFreeAsync` and `cudaMemcpyAsync`.
+   1. Hint: Remember to check that asynchronous operations have completed before using their results.
+8. Measure the interconnection bandwidth between CPU and GPU by measuring the time needed to transfer an array of `100 MB` in size.
 
-### Exercise 2. Launch a kernel
+### Exercise 2: Launch a kernel
 
 By completing this exercise you will learn how to configure and launch a simple CUDA kernel.
 
 1. Allocate device memory;
-2. Configure the kernel to run using a one-dimensional grid of one-dimensional blocks;
-3. Each GPU thread should set one element of the array to `d_a[i] = i + 42;`
+2. Configure the kernel to run using a one-dimensional grid of one-dimensional blocks (i.e. using only the `x` coordinate for `blockIdx` and `threadIdx`);
+3. Each GPU thread should set one element of the array to:
+
+   `d_a[i] = i + 42;`
 4. Copy the results to the host memory;
 5. Check the correctness of the results
 
-### Exercise 3. Two-dimensional grid
+### Exercise 3: Two-dimensional grid
 
 M is a matrix of NxN integers.
 
 1. Set N=4
 2. Write a kernel that sets each element of the matrix to its linear index (e.g. M[2,3] = 2*N + 3), by making use of two-dimensional grid and blocks. (Two-dimensional means using the x and y coordinates).
 3. Copy the result to the host and check that it is correct.
-4. Try with a rectangular matrix 19x67. Hint: check the kernel launch parameters.
+4. Try with a rectangular matrix 19x67. 
 
-### Exercise 4. Measuring throughput 
+Hint: check the kernel launch parameters.
+Hint: fix the number of threads per block in each dimension and find the number of blocks needed to cover the full matrix. Pay attention not to write or read out of the matrix boundaries.
 
-The throughput of a kernel can be defined as the number of bytes read and written by a kernel in the unit of time.
-
-The CUDA event API includes calls to create and destroy events, record events, and compute the elapsed time in milliseconds between two recorded events.
-
-CUDA events make use of the concept of CUDA streams. A CUDA stream is simply a sequence of operations that are performed in order on the device. Operations in different streams can be interleaved and in some cases overlapped, a property that can be used to hide data transfers between the host and the device. Up to now, all operations on the GPU have occurred in the default stream, or stream 0 (also called the "Null Stream").
-
-The peak theoretical throughput can be evaluated as well: if your device comes with a memory clock rate of 1GHz DDR (double data rate) and a 256-bit wide memory interface, the peak theoretical throughput can be computed with the following:
-
-Throughput (GB/s)= Memory_rate(Hz) * memory_interface_width(byte) * 2 /10<sup>9</sup>
-
-1. Compute the theoretical peak throughput of the device you are using.
-2. Modify ex04.cu to give the measurement of actual throughput of the kernel.
-3. Measure the throughput with a decreasing number of elements (in logarithmic scale). Before doing that write down what do you expect (you can also draw a diagram).
-4. What did you find out? Can you give an explanation?
-
-
-### Exercise 5. Parallel Reduction
+### Exercise 4: Parallel Reduction
 
 Given an array `a[N]`, the reduction sum `Sum` of a is the sum of all its elements: `Sum=a[0]+a[1]+...a[N-1]`.
 
 1. Implement a block-wise parallel reduction (using the shared memory).
 2. For each block, save the partial sum.
 3. Sum all the partial sums together.
-4. Check the result and compare the obtained result with the host one.
+4. Check the result comparing with the host result.
+5. Measure the throughput of your reduction kernel using CUDA Events (see exercise 4)
 
 * Bonus: Can you implement a one-step reduction? Measure and compare the throughput of the two versions.
 * Challenge: The cumulative sum of an array `a[N]` is another array `b[N]`, the sum of prefixes of `a`:
 `b[i] = a[0] + a[1] + … + a[i]`. Implement a cumulative sum kernel assuming that the size of the input array is multiple of the block size.
+
 
 ### Challenge: Histogram
 
@@ -168,21 +154,6 @@ The histogram bins will use unsigned 32-bit counters that must be saturated at 1
 
 The input length can be assumed to be less than 2ˆ32. `NUM_BINS` is fixed at 4096 for this lab.
 This can be split into two kernels: one that does a histogram without saturation, and a final kernel that cleans up the bins if they are too large. These two stages can also be combined into a single kernel.
-
-### Utility. Measuring time using CUDA Events
-
-```C++
-cudaEvent_t start, stop; float time;
-cudaEventCreate(&start);  cudaEventCreate(&stop);
-cudaEventRecord(start, 0);
-square_array <<< n_blocks, block_size >>> (a_d, N);
-cudaEventRecord(stop, 0);
-cudaEventSynchronize(stop);
-cudaEventElapsedTime(&time, start, stop);
-std::cout << "Time for the kernel: " << time << " ms" << std::endl;
-```
-
-
 
 ### Atomics <a href="https://docs.nvidia.com/cuda/cuda-c-programming-guide/index.html#atomic-functions" target="_blank">[1]</a>
 
@@ -201,9 +172,4 @@ __half2 atomicAdd(__half2 *address, __half2 val);
 __half atomicAdd(__half *address, __half val);
 ```
 
-reads the 16-bit, 32-bit or 64-bit word old located at the address in global or shared memory, computes (old + val), and stores the result back to memory at the same address. These three operations are performed in one atomic transaction. The function returns old.
-
-### Reference Material
-
-The CUDA Runtime API reference manual is a very useful source of information:
-<a href="http://docs.nvidia.com/cuda/cuda-runtime-api/index.html" target="_blank">http://docs.nvidia.com/cuda/cuda-runtime-api/index.html</a>
+reads the 16-bit, 32-bit or 64-bit word old located at the address address in global or shared memory, computes (old + val), and stores the result back to memory at the same address. These three operations are performed in one atomic transaction. The function returns old.
