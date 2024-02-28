@@ -49,16 +49,17 @@ int main(int argc, char** argv)
 
   // Part 2 of 5: configure and launch kernel
   myFirstKernel<<<___, ___, 0, queue>>>(___);
+  //Check for any errors that occurred during kernel launch
   CUDA_CHECK(cudaGetLastError());
 
-  // Part 4 of 5: device to host copy
+  // Part 4 of 5: copy data from device to host asynchronously
   CUDA_CHECK(cudaMemcpyAsync(___));
-
-  // Wait for all asynchronous operations to complete
-  CUDA_CHECK(cudaStreamSynchronize(queue));
 
   // Free the device memory
   CUDA_CHECK(cudaFreeAsync(d_a, queue));
+
+  // Wait for all asynchronous operations to complete
+  CUDA_CHECK(cudaStreamSynchronize(queue));
 
   // Part 5 of 5: verify that the data returned to the host is correct
   for (int i = 0; i < N; ++i) {
@@ -72,5 +73,4 @@ int main(int argc, char** argv)
   // there are no run-time errors.  Good work!
   std::cout << "Correct, good work!" << std::endl;
 
-  return 0;
 }

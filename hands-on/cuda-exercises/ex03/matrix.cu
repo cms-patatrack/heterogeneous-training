@@ -44,23 +44,25 @@ int main()
   CUDA_CHECK(cudaMallocAsync(___));
 
   // Part 2 of 4: define grid and block size and launch the kernel
-  dim3 grid, block;
-  block.x = ___;
-  block.y = ___;
-  grid.x  = ___;
-  grid.y  = ___;
+  dim3 numberOfBlocks, numberOfThreadsPerBlock;
+  numberOfThreadsPerBlock.x = ___;
+  numberOfThreadsPerBlock.y = ___;
+  numberOfBlocks.x  = ___;
+  numberOfBlocks.y  = ___;
 
-  kernel<<<grid, block, 0, queue>>>(d_a, dimx, dimy);
+  kernel<<<numberOfBlocks, numberOfThreadsPerBlock, 0, queue>>>(d_a, dimx, dimy);
   CUDA_CHECK(cudaGetLastError());
 
   // Device to host copy
   CUDA_CHECK(cudaMemcpyAsync(___));
 
+  // Free the device memory
+  CUDA_CHECK(cudaFreeAsync(d_a, queue));
+
+
   // Wait for all asynchronous operations to complete
   CUDA_CHECK(cudaStreamSynchronize(queue));
 
-  // Free the device memory
-  CUDA_CHECK(cudaFreeAsync(d_a, queue));
 
   // verify the data returned to the host is correct
   for (int row = 0; row < dimy; ++row) {

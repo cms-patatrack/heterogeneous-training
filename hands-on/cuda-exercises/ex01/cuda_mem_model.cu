@@ -29,7 +29,8 @@ int main()
   std::vector<float> h_a(dimA);
 
   // Allocate and initialize host memory
-  for (int i = 0; i < dimA; ++i) {
+  for (int i = 0; i < dimA; ++i)
+  {
     h_a[i] = i;
   }
 
@@ -55,16 +56,16 @@ int main()
   // Part 4 of 5: device to host copy
   CUDA_CHECK(cudaMemcpyAsync(___));
 
-
   // Part 5 of 5: free the device memory
   CUDA_CHECK(cudaFreeAsync(___));
   CUDA_CHECK(cudaFreeAsync(___));
 
   // Wait for all asynchronous operations to complete
   CUDA_CHECK(cudaStreamSynchronize(queue));
-  
+
   // Verify the data on the host is correct
-  for (int i = 0; i < dimA; ++i) {
+  for (int i = 0; i < dimA; ++i)
+  {
     assert(h_a[i] == (float)i);
   }
 
