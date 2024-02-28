@@ -1,0 +1,554 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+      
+      
+        <link rel="prev" href="../..">
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.4.2, mkdocs-material-9.0.6">
+    
+    
+      
+        <title>Introduction to CUDA - Introduction to Heterogeneous Computing</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.558e4712.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.2505c338.min.css">
+      
+      
+
+    
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce((e,_)=>(e<<5)-e+_.charCodeAt(0),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+    
+  </head>
+  
+  
+    
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="" data-md-color-accent="">
+  
+    
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#exercise-1-cuda-memory-model" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="Introduction to Heterogeneous Computing" class="md-header__button md-logo" aria-label="Introduction to Heterogeneous Computing" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54Z"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2Z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Introduction to Heterogeneous Computing
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Introduction to CUDA
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+    
+    
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="Introduction to Heterogeneous Computing" class="md-nav__button md-logo" aria-label="Introduction to Heterogeneous Computing" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54Z"/></svg>
+
+    </a>
+    Introduction to Heterogeneous Computing
+  </label>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        Home
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+    
+  
+  
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+      
+      
+      
+      <input class="md-nav__toggle md-toggle " data-md-toggle="__nav_2" type="checkbox" id="__nav_2" checked>
+      
+      
+      
+        <label class="md-nav__link" for="__nav_2" tabindex="0" aria-expanded="true">
+          Parallelism
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Parallelism" data-md-level="1">
+        <label class="md-nav__title" for="__nav_2">
+          <span class="md-nav__icon md-icon"></span>
+          Parallelism
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+    
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" data-md-toggle="toc" type="checkbox" id="__toc">
+      
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          Introduction to CUDA
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        Introduction to CUDA
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#exercise-1-cuda-memory-model" class="md-nav__link">
+    Exercise 1: CUDA Memory Model
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#exercise-2-launch-a-kernel" class="md-nav__link">
+    Exercise 2: Launch a kernel
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#exercise-3-two-dimensional-grid" class="md-nav__link">
+    Exercise 3: Two-dimensional grid
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#exercise-4-parallel-reduction" class="md-nav__link">
+    Exercise 4: Parallel Reduction
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#challenge-histogram" class="md-nav__link">
+    Challenge: Histogram
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#atomics-1" class="md-nav__link">
+    Atomics [1]
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#exercise-1-cuda-memory-model" class="md-nav__link">
+    Exercise 1: CUDA Memory Model
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#exercise-2-launch-a-kernel" class="md-nav__link">
+    Exercise 2: Launch a kernel
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#exercise-3-two-dimensional-grid" class="md-nav__link">
+    Exercise 3: Two-dimensional grid
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#exercise-4-parallel-reduction" class="md-nav__link">
+    Exercise 4: Parallel Reduction
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#challenge-histogram" class="md-nav__link">
+    Challenge: Histogram
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#atomics-1" class="md-nav__link">
+    Atomics [1]
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+
+  <h1>Introduction to CUDA</h1>
+
+<p>I'm assuming that you have access to a machine where CUDA is available.</p>
+<p>Now clone the repository</p>
+<pre><code class="language-bash">$ git clone https://github.com/cms-patatrack/heterogeneous-training.git
+</code></pre>
+<p>Check that your environment is correctly configured to compile CUDA code by running:</p>
+<pre><code class="language-bash">$ nvcc --version
+nvcc: NVIDIA (R) Cuda compiler driver
+Copyright (c) 2005-2023 NVIDIA Corporation
+Built on Mon_Apr__3_17:16:06_PDT_2023
+Cuda compilation tools, release 12.1, V12.1.105
+Build cuda_12.1.r12.1/compiler.32688072_0
+</code></pre>
+<p>Compile and run the <code>deviceQuery</code> application:</p>
+<pre><code class="language-bash">$ cd hands-on/cuda/utils/deviceQuery
+$ make
+</code></pre>
+<p>You can get some useful information about the features and the limits that you will find on the device you will be running your code on. For example:</p>
+<pre><code class="language-shell">$ ./deviceQuery 
+./deviceQuery Starting...
+
+ CUDA Device Query (Runtime API) version (CUDART static linking)
+
+Detected 1 CUDA Capable device(s)
+
+Device 0: &quot;Tesla V100-SXM2-32GB&quot;
+  CUDA Driver Version / Runtime Version          11.4 / 11.4
+  CUDA Capability Major/Minor version number:    7.0
+  Total amount of global memory:                 32510 MBytes (34089730048 bytes)
+  (80) Multiprocessors, ( 64) CUDA Cores/MP:     5120 CUDA Cores
+  GPU Max Clock rate:                            1530 MHz (1.53 GHz)
+  Memory Clock rate:                             877 Mhz
+  Memory Bus Width:                              4096-bit
+  L2 Cache Size:                                 6291456 bytes
+  Maximum Texture Dimension Size (x,y,z)         1D=(131072), 2D=(131072, 65536), 3D=(16384, 16384, 16384)
+  Maximum Layered 1D Texture Size, (num) layers  1D=(32768), 2048 layers
+  Maximum Layered 2D Texture Size, (num) layers  2D=(32768, 32768), 2048 layers
+  Total amount of constant memory:               65536 bytes
+  Total amount of shared memory per block:       49152 bytes
+  Total shared memory per multiprocessor:        98304 bytes
+  Total number of registers available per block: 65536
+  Warp size:                                     32
+  Maximum number of threads per multiprocessor:  2048
+  Maximum number of threads per block:           1024
+  Max dimension size of a thread block (x,y,z): (1024, 1024, 64)
+  Max dimension size of a grid size    (x,y,z): (2147483647, 65535, 65535)
+  Maximum memory pitch:                          2147483647 bytes
+  Texture alignment:                             512 bytes
+  Concurrent copy and kernel execution:          Yes with 6 copy engine(s)
+  Run time limit on kernels:                     Yes
+  Integrated GPU sharing Host Memory:            No
+  Support host page-locked memory mapping:       Yes
+  Alignment requirement for Surfaces:            Yes
+  Device has ECC support:                        Enabled
+  Device supports Unified Addressing (UVA):      Yes
+  Device supports Managed Memory:                Yes
+  Device supports Compute Preemption:            Yes
+  Supports Cooperative Kernel Launch:            Yes
+  Supports MultiDevice Co-op Kernel Launch:      Yes
+  Device PCI Domain ID / Bus ID / location ID:   0 / 58 / 0
+  Compute Mode:
+     &lt; Default (multiple host threads can use ::cudaSetDevice() with device simultaneously) &gt;
+
+deviceQuery, CUDA Driver = CUDART, CUDA Driver Version = 11.4, CUDA Runtime Version = 11.4, NumDevs = 1
+Result = PASS
+</code></pre>
+<p>Some of you are sharing the same machine and some time measurements can be influenced by other users running at the very same moment. It can be necessary to run time measurements multiple times.</p>
+<h3 id="exercise-1-cuda-memory-model">Exercise 1: CUDA Memory Model</h3>
+<p>In this exercise you will learn what heterogeneous memory model means, by demonstrating the difference between host and device memory spaces.</p>
+<ol>
+<li>Allocate device memory;</li>
+<li>Copy the host array h_a to d_a on the device;</li>
+<li>Copy the device array d_a to the device array d_b;</li>
+<li>Copy the device array d_b to the host array h_a;</li>
+<li>Free the memory allocated for d_a and d_b.</li>
+<li>Compile and run the program by running:</li>
+</ol>
+<pre><code class="language-bash">$ nvcc cuda_mem_model.cu -o ex01
+$ ./ex01
+</code></pre>
+<ol>
+<li>Repeat the exercise using CUDA Streams with <code>cudaMallocAsync</code>, <code>cudaFreeAsync</code> and <code>cudaMemcpyAsync</code>.</li>
+<li>Hint: Remember to check that asynchronous operations have completed before using their results.</li>
+<li>Measure the interconnection bandwidth between CPU and GPU by measuring the time needed to transfer an array of <code>100 MB</code> in size.</li>
+</ol>
+<h3 id="exercise-2-launch-a-kernel">Exercise 2: Launch a kernel</h3>
+<p>By completing this exercise you will learn how to configure and launch a simple CUDA kernel.</p>
+<ol>
+<li>Allocate device memory;</li>
+<li>Configure the kernel to run using a one-dimensional grid of one-dimensional blocks (i.e. using only the <code>x</code> coordinate for <code>blockIdx</code> and <code>threadIdx</code>);</li>
+<li>Each GPU thread should set one element of the array to:</li>
+</ol>
+<p><code>d_a[i] = i + 42;</code>
+4. Copy the results to the host memory;
+5. Check the correctness of the results</p>
+<h3 id="exercise-3-two-dimensional-grid">Exercise 3: Two-dimensional grid</h3>
+<p>M is a matrix of NxN integers.</p>
+<ol>
+<li>Set N=4</li>
+<li>Write a kernel that sets each element of the matrix to its linear index (e.g. M[2,3] = 2*N + 3), by making use of two-dimensional grid and blocks. (Two-dimensional means using the x and y coordinates).</li>
+<li>Copy the result to the host and check that it is correct.</li>
+<li>Try with a rectangular matrix 19x67. </li>
+</ol>
+<p>Hint: check the kernel launch parameters.
+Hint: fix the number of threads per block in each dimension and find the number of blocks needed to cover the full matrix. Pay attention not to write or read out of the matrix boundaries.</p>
+<h3 id="exercise-4-parallel-reduction">Exercise 4: Parallel Reduction</h3>
+<p>Given an array <code>a[N]</code>, the reduction sum <code>Sum</code> of a is the sum of all its elements: <code>Sum=a[0]+a[1]+...a[N-1]</code>.</p>
+<ol>
+<li>Implement a block-wise parallel reduction (using the shared memory).</li>
+<li>For each block, save the partial sum.</li>
+<li>Sum all the partial sums together.</li>
+<li>Check the result comparing with the host result.</li>
+<li>
+<p>Measure the throughput of your reduction kernel using CUDA Events (see exercise 4)</p>
+</li>
+<li>
+<p>Bonus: Can you implement a one-step reduction? Measure and compare the throughput of the two versions.</p>
+</li>
+<li>Challenge: The cumulative sum of an array <code>a[N]</code> is another array <code>b[N]</code>, the sum of prefixes of <code>a</code>:
+<code>b[i] = a[0] + a[1] + … + a[i]</code>. Implement a cumulative sum kernel assuming that the size of the input array is multiple of the block size.</li>
+</ol>
+<h3 id="challenge-histogram">Challenge: Histogram</h3>
+<p>The purpose of this lab is to implement an efficient histogramming algorithm for an input array of integers within a given range.</p>
+<p>Each integer will map into a single bin, so the values will range from 0 to (NUM_BINS - 1).</p>
+<p>The histogram bins will use unsigned 32-bit counters that must be saturated at 127 (i.e. no roll back to 0 allowed).</p>
+<p>The input length can be assumed to be less than 2ˆ32. <code>NUM_BINS</code> is fixed at 4096 for this lab.
+This can be split into two kernels: one that does a histogram without saturation, and a final kernel that cleans up the bins if they are too large. These two stages can also be combined into a single kernel.</p>
+<h3 id="atomics-1">Atomics <a href="https://docs.nvidia.com/cuda/cuda-c-programming-guide/index.html#atomic-functions" target="_blank">[1]</a></h3>
+<p>An atomic function performs a read-modify-write atomic operation on one 32-bit or 64-bit word residing in global or shared memory.
+The operation is atomic in the sense that it is guaranteed to be performed without interference from other threads.</p>
+<pre><code class="language-C++">int atomicAdd(int* address, int val);
+unsigned int atomicAdd(unsigned int* address,
+                       unsigned int val);
+unsigned long long int atomicAdd(unsigned long long int* address,
+                                 unsigned long long int val);
+float atomicAdd(float* address, float val);
+double atomicAdd(double* address, double val);
+__half2 atomicAdd(__half2 *address, __half2 val);
+__half atomicAdd(__half *address, __half val);
+</code></pre>
+<p>reads the 16-bit, 32-bit or 64-bit word old located at the address address in global or shared memory, computes (old + val), and stores the result back to memory at the same address. These three operations are performed in one atomic transaction. The function returns old.</p>
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    <script id="__config" type="application/json">{"base": "../..", "features": [], "search": "../../assets/javascripts/workers/search.e5c33ebb.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.51d95adb.min.js"></script>
+      
+        <script src="../../search/main.js"></script>
+      
+    
+  </body>
+</html>
